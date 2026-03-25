@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { connectDB } from './db.js';
-import User from './models/User.js';
-import { JWT_SECRET } from './authMiddleware.js';
+import { connectDB } from '../db.js';
+import User from '../models/User.js';
+import { JWT_SECRET } from '../authMiddleware.js';
 
 export default async function handler(req, res) {
   await connectDB();
