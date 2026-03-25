@@ -23,7 +23,29 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />
   }
   
+  if (user.clientId) {
+    return <Navigate to={`/dashboard/${user.clientId}`} replace />
+  }
+  
   return children
+}
+
+function RootRedirect() {
+  const { user, loading } = useAuth()
+  
+  if (loading) {
+    return <div className="loading-spinner" />
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+  
+  if (user.clientId) {
+    return <Navigate to={`/dashboard/${user.clientId}`} replace />
+  }
+  
+  return <Navigate to="/admin" replace />
 }
 
 function App() {
@@ -51,8 +73,8 @@ function App() {
             <Route path="clients/:id" element={<ClientDetailPage />} />
             <Route path="users" element={<UsersPage />} />
           </Route>
-          <Route path="/" element={<Navigate to="/admin" replace />} />
-          <Route path="*" element={<Navigate to="/admin" replace />} />
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="*" element={<RootRedirect />} />
         </Routes>
       </div>
     </div>
