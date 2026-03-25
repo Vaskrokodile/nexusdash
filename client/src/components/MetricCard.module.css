@@ -1,0 +1,296 @@
+.metricCard {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.metricCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 30%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.5) 70%,
+    transparent 100%
+  );
+  filter: blur(0.5px);
+}
+
+.metricCard::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(59, 130, 246, 0.08) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.metricCard:hover::after {
+  opacity: 1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.iconWrapper {
+  width: 64px;
+  height: 64px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.iconOuter {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  background: linear-gradient(
+    145deg,
+    rgba(59, 130, 246, 0.35) 0%,
+    rgba(59, 130, 246, 0.15) 50%,
+    rgba(59, 130, 246, 0.25) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(59, 130, 246, 0.35),
+    0 4px 16px rgba(59, 130, 246, 0.25),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.15),
+    inset 3px 0 0 rgba(255, 255, 255, 0.1),
+    inset -3px 0 0 rgba(255, 255, 255, 0.1);
+  transform: translateZ(0) rotateX(0deg);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.iconMiddle {
+  position: absolute;
+  width: 85%;
+  height: 85%;
+  top: 7.5%;
+  left: 7.5%;
+  border-radius: 14px;
+  background: linear-gradient(
+    160deg,
+    rgba(6, 182, 212, 0.4) 0%,
+    rgba(59, 130, 246, 0.3) 50%,
+    rgba(6, 182, 212, 0.35) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 4px 20px rgba(6, 182, 212, 0.3),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateZ(10px);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.iconInner {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  top: 15%;
+  left: 15%;
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(59, 130, 246, 0.5) 0%,
+    rgba(59, 130, 246, 0.25) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 2px 12px rgba(59, 130, 246, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(20px);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.iconCore {
+  position: relative;
+  width: 50%;
+  height: 50%;
+  border-radius: 10px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 20px rgba(255, 255, 255, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(30px);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.iconCore svg {
+  width: 55%;
+  height: 55%;
+  color: var(--accent-blue);
+  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.4));
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.metricCard:hover .iconOuter {
+  transform: translateZ(5px) rotateX(-5deg) rotateY(5deg);
+  box-shadow: 
+    0 12px 40px rgba(59, 130, 246, 0.45),
+    0 6px 20px rgba(59, 130, 246, 0.35),
+    inset 0 3px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.15),
+    inset 4px 0 0 rgba(255, 255, 255, 0.12),
+    inset -4px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.metricCard:hover .iconMiddle {
+  transform: translateZ(15px);
+  box-shadow: 
+    0 6px 28px rgba(6, 182, 212, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.metricCard:hover .iconInner {
+  transform: translateZ(25px);
+  box-shadow: 
+    0 4px 16px rgba(59, 130, 246, 0.35),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.metricCard:hover .iconCore {
+  transform: translateZ(35px);
+  box-shadow: 
+    0 0 30px rgba(255, 255, 255, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    inset 0 3px 6px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.metricCard:hover .iconCore svg {
+  transform: scale(1.1);
+  filter: drop-shadow(0 3px 6px rgba(59, 130, 246, 0.5));
+}
+
+.trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.trendUp {
+  color: var(--success);
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.2) 0%,
+    rgba(34, 197, 94, 0.1) 100%
+  );
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(34, 197, 94, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.trendDown {
+  color: var(--error);
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.2) 0%,
+    rgba(239, 68, 68, 0.1) 100%
+  );
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.glow {
+  position: absolute;
+  top: -30%;
+  right: -30%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.25) 0%,
+    transparent 70%
+  );
+  filter: blur(30px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.metricCard:hover .glow {
+  opacity: 1;
+}
