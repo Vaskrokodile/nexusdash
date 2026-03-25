@@ -1,8 +1,13 @@
 import { copyFileSync, rmSync, existsSync, mkdirSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const src = join('client', 'dist');
-const dest = 'dist';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const rootDir = join(__dirname, '..');
+
+const src = join(rootDir, 'client', 'dist');
+const dest = join(rootDir, 'dist');
 
 try {
   if (existsSync(dest)) {
