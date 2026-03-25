@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { connectDB } from '../db.js';
-import Client from '../models/Client.js';
-import User from '../models/User.js';
-import { JWT_SECRET } from '../authMiddleware.js';
+import { supabase } from '../../supabase.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'nexus-dash-secret-key-change-in-production';
 
 function generateWidgets(client, authorized) {
   const revenueData = [
@@ -15,8 +14,8 @@ function generateWidgets(client, authorized) {
   ];
 
   const projectData = [
-    { name: 'Completed', value: client.metrics.completion, color: client.accentColor },
-    { name: 'In Progress', value: 100 - client.metrics.completion, color: 'rgba(255,255,255,0.2)' }
+    { name: 'Completed', value: client.metrics?.completion || 0, color: client.accent_color || '#3b82f6' },
+    { name: 'In Progress', value: 100 - (client.metrics?.completion || 0), color: 'rgba(255,255,255,0.2)' }
   ];
 
   const widgets = [
@@ -25,7 +24,7 @@ function generateWidgets(client, authorized) {
       type: 'line-chart',
       title: 'Revenue Overview',
       data: revenueData,
-      metric: client.metrics.revenue,
+      metric: client.metrics?.revenue || 0,
       format: 'currency'
     },
     {
@@ -33,7 +32,7 @@ function generateWidgets(client, authorized) {
       type: 'donut-chart',
       title: 'Project Completion',
       data: projectData,
-      metric: client.metrics.completion,
+      metric: client.metrics?.completion || 0,
       format: 'percent'
     },
     {
@@ -41,10 +40,10 @@ function generateWidgets(client, authorized) {
       type: 'stats-grid',
       title: 'Key Metrics',
       stats: [
-        { label: 'Total Revenue', value: client.metrics.revenue, format: 'currency' },
-        { label: 'Active Projects', value: client.metrics.projects, format: 'number' },
-        { label: 'Tasks Tracked', value: client.metrics.tasks, format: 'number' },
-        { label: 'Completion Rate', value: client.metrics.completion, format: 'percent' }
+        { label: 'Total Revenue', value: client.metrics?.revenue || 0, format: 'currency' },
+        { label: 'Active Projects', value: client.metrics?.projects || 0, format: 'number' },
+        { label: 'Tasks Tracked', value: client.metrics?.tasks || 0, format: 'number' },
+        { label: 'Completion Rate', value: client.metrics?.completion || 0, format: 'percent' }
       ]
     },
     {
@@ -69,45 +68,48 @@ function generateWidgets(client, authorized) {
 }
 
 export default async function handler(req, res) {
-  await connectDB();
-
   const { id } = req.query;
 
   if (!id) {
     return res.status(400).json({ error: 'Dashboard ID required' });
   }
 
-  try {
-    const client = await Client.findById(id);
-    
-    if (!client) {
-      return res.status(404).json({ error: 'Dashboard not found' });
-    }
+  const { data: client, error } = await supabase
+    .from('clients')
+    .select('*')
+    .eq('id', id)
+    .single();
 
-    let authorized = false;
-
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.split(' ')[1];
-      try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const user = await User.findById(decoded.userId);
-        if (user && user.clientId && user.clientId.toString() === id) {
-          authorized = true;
-        }
-      } catch (err) {
-      }
-    }
-
-    const widgets = generateWidgets(client, authorized);
-    
-    return res.json({ 
-      client: client.toObject(), 
-      widgets,
-      authorized,
-      requiresAuth: !authorized
-    });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+  if (error || !client) {
+    return res.status(404).json({ error: 'Dashboard not found' });
   }
+
+  let authorized = false;
+
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const { data: user } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', decoded.userId)
+        .single();
+
+      if (user && user.client_id === id) {
+        authorized = true;
+      }
+    } catch (err) {
+    }
+  }
+
+  const widgets = generateWidgets(client, authorized);
+
+  return res.json({
+    client,
+    widgets,
+    authorized,
+    requiresAuth: !authorized
+  });
 }

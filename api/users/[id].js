@@ -1,11 +1,27 @@
-import { connectDB } from '../../db.js';
-import User from '../../models/User.js';
-import Client from '../../models/Client.js';
-import { authenticate } from '../../authMiddleware.js';
+import jwt from 'jsonwebtoken';
+import { supabase } from '../../supabase.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'nexus-dash-secret-key-change-in-production';
+
+function authenticate(req, res, callback) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.userId = decoded.userId;
+    callback();
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+}
 
 export default async function handler(req, res) {
-  await connectDB();
-
   const { id } = req.query;
 
   if (!id) {
@@ -13,67 +29,72 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'PUT') {
-    return authenticate(req, res, async () => {
-      try {
-        const { email, name, clientId, password } = req.body;
+    authenticate(req, res, async () => {
+      const { email, name, clientId, password } = req.body;
 
-        const user = await User.findById(id);
-        if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-        }
+      const { data: user, error: fetchError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-        if (email && email !== user.email) {
-          const existingUser = await User.findOne({ email });
-          if (existingUser) {
-            return res.status(400).json({ error: 'Email already exists' });
-          }
-          user.email = email;
-        }
-
-        if (name) user.name = name;
-
-        if (clientId !== undefined) {
-          if (clientId) {
-            const client = await Client.findById(clientId);
-            if (!client) {
-              return res.status(400).json({ error: 'Client not found' });
-            }
-          }
-          user.clientId = clientId || null;
-        }
-
-        if (password) {
-          user.password = password;
-        }
-
-        await user.save();
-
-        const userWithoutPassword = user.toObject();
-        delete userWithoutPassword.password;
-        return res.json(userWithoutPassword);
-      } catch (error) {
-        return res.status(500).json({ error: error.message });
+      if (fetchError || !user) {
+        return res.status(404).json({ error: 'User not found' });
       }
+
+      if (email && email !== user.email) {
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', email)
+          .single();
+
+        if (existingUser) {
+          return res.status(400).json({ error: 'Email already exists' });
+        }
+      }
+
+      const updates = {};
+      if (email) updates.email = email;
+      if (name) updates.name = name;
+      if (clientId !== undefined) updates.client_id = clientId || null;
+      if (password) updates.password = password;
+
+      const { data: updatedUser, error: updateError } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (updateError) {
+        return res.status(500).json({ error: updateError.message });
+      }
+
+      const { password: _, ...userWithoutPassword } = updatedUser;
+      return res.json(userWithoutPassword);
     });
+    return;
   }
 
   if (req.method === 'DELETE') {
-    return authenticate(req, res, async () => {
-      try {
-        if (id === req.userId) {
-          return res.status(400).json({ error: 'Cannot delete your own account' });
-        }
-
-        const user = await User.findByIdAndDelete(id);
-        if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-        }
-
-        return res.json({ success: true });
-      } catch (error) {
-        return res.status(500).json({ error: error.message });
+    authenticate(req, res, async () => {
+      if (id === req.userId) {
+        return res.status(400).json({ error: 'Cannot delete your own account' });
       }
+
+      const { error: deleteError } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', id);
+
+      if (deleteError) {
+        return res.status(500).json({ error: deleteError.message });
+      }
+
+      return res.json({ success: true });
     });
+    return;
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
