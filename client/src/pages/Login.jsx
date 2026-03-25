@@ -15,8 +15,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [shake, setShake] = useState(false)
 
-  if (user?.clientId) {
-    return <Navigate to={`/dashboard/${user.clientId}`} replace />
+  if (user?.client_id) {
+    return <Navigate to={`/dashboard/${user.client_id}`} replace />
   }
 
   if (user) {
@@ -30,8 +30,8 @@ export default function Login() {
 
     try {
       const loggedInUser = await login(email, password)
-      if (loggedInUser.clientId) {
-        window.location.href = `/dashboard/${loggedInUser.clientId}`
+      if (loggedInUser.client_id) {
+        window.location.href = `/dashboard/${loggedInUser.client_id}`
       }
     } catch (err) {
       setError(err.message)

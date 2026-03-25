@@ -23,8 +23,8 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />
   }
   
-  if (user.clientId) {
-    return <Navigate to={`/dashboard/${user.clientId}`} replace />
+  if (user.client_id) {
+    return <Navigate to={`/dashboard/${user.client_id}`} replace />
   }
   
   return children
@@ -41,8 +41,8 @@ function RootRedirect() {
     return <Navigate to="/login" replace />
   }
   
-  if (user.clientId) {
-    return <Navigate to={`/dashboard/${user.clientId}`} replace />
+  if (user.client_id) {
+    return <Navigate to={`/dashboard/${user.client_id}`} replace />
   }
   
   return <Navigate to="/admin" replace />

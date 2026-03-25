@@ -49,7 +49,7 @@ export default function UsersPage() {
       email: user.email, 
       password: '', 
       name: user.name, 
-      clientId: user.clientId || '' 
+      clientId: user.client_id || '' 
     })
     setFormError('')
     setShowModal(true)
@@ -186,7 +186,7 @@ export default function UsersPage() {
                     <span>{user.role}</span>
                   </div>
                   <div className={styles.metaItem}>
-                    <span className={styles.clientBadge}>{getClientName(user.clientId)}</span>
+                    <span className={styles.clientBadge}>{getClientName(user.client_id)}</span>
                   </div>
                 </div>
               </GlassCard>
