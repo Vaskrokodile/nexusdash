@@ -1,7 +1,7 @@
 import { connectDB } from '../db.js';
 import User from '../models/User.js';
 import Client from '../models/Client.js';
-import { authenticate } from './authMiddleware.js';
+import { authenticate } from '../authMiddleware.js';
 
 export default async function handler(req, res) {
   await connectDB();

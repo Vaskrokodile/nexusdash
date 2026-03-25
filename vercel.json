@@ -1,4 +1,74 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "client/dist"
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/login.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/me.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/clients.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/clients/[id].js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/users.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/users/[id].js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/dashboard/[id].js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/auth/login",
+      "dest": "/api/login.js"
+    },
+    {
+      "src": "/api/auth/me",
+      "dest": "/api/me.js"
+    },
+    {
+      "src": "/api/clients",
+      "dest": "/api/clients.js"
+    },
+    {
+      "src": "/api/clients/(?<id>[^/]+)",
+      "dest": "/api/clients/[id].js"
+    },
+    {
+      "src": "/api/users",
+      "dest": "/api/users.js"
+    },
+    {
+      "src": "/api/users/(?<id>[^/]+)",
+      "dest": "/api/users/[id].js"
+    },
+    {
+      "src": "/api/dashboard/(?<id>[^/]+)",
+      "dest": "/api/dashboard/[id].js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/dist/$1"
+    }
+  ]
 }
