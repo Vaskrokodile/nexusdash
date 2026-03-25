@@ -17,7 +17,11 @@
       "use": "@vercel/node"
     },
     {
-      "src": "api/clients.js",
+      "src": "api/logout.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/clients/index.js",
       "use": "@vercel/node"
     },
     {
@@ -25,7 +29,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "api/users.js",
+      "src": "api/users/index.js",
       "use": "@vercel/node"
     },
     {
@@ -47,8 +51,12 @@
       "dest": "/api/me.js"
     },
     {
+      "src": "/api/auth/logout",
+      "dest": "/api/logout.js"
+    },
+    {
       "src": "/api/clients",
-      "dest": "/api/clients.js"
+      "dest": "/api/clients/index.js"
     },
     {
       "src": "/api/clients/(?<id>[^/]+)",
@@ -56,7 +64,7 @@
     },
     {
       "src": "/api/users",
-      "dest": "/api/users.js"
+      "dest": "/api/users/index.js"
     },
     {
       "src": "/api/users/(?<id>[^/]+)",
