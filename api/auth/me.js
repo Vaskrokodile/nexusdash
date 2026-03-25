@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { supabase } from '../supabase.js';
+import { supabase } from '../../supabase.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'nexus-dash-secret-key-change-in-production';
 
